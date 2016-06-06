@@ -11,6 +11,10 @@
 
 namespace Hearsay\RequireJSBundle\Templating\Helper;
 
+use MiWay\Bundle\CoreBundle\Assets\VersionStrategy\BuildNumberVersionStrategy;
+use Symfony\Component\Asset\VersionStrategy\VersionStrategyInterface;
+use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Templating\EngineInterface;
 use Symfony\Component\Templating\Helper\Helper;
 
@@ -18,6 +22,7 @@ use Hearsay\RequireJSBundle\Configuration\ConfigurationBuilder;
 
 /**
  * Templating helper for RequireJS inclusion.
+ *
  * @author Kevin Montag <kevin@hearsay.it>
  */
 class RequireJSHelper extends Helper
@@ -43,23 +48,31 @@ class RequireJSHelper extends Helper
     protected $requireJsSrc;
 
     /**
+     * @var ContainerInterface
+     */
+    protected $container;
+
+    /**
      * The constructor method
      *
-     * @param EngineInterface      $engine
-     * @param ConfigurationBuilder $configurationBuilder
-     * @param string               $initializeTemplate
-     * @param string               $requireJsSrc
+     * @param EngineInterface                                           $engine
+     * @param ConfigurationBuilder                                      $configurationBuilder
+     * @param string                                                    $initializeTemplate
+     * @param string                                                    $requireJsSrc
+     * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
      */
     public function __construct(
         EngineInterface $engine,
         ConfigurationBuilder $configurationBuilder,
         $initializeTemplate,
-        $requireJsSrc
+        $requireJsSrc,
+        ContainerInterface $container
     ) {
-        $this->engine               = $engine;
+        $this->engine = $engine;
         $this->configurationBuilder = $configurationBuilder;
-        $this->initializeTemplate   = $initializeTemplate;
-        $this->requireJsSrc         = $requireJsSrc;
+        $this->initializeTemplate = $initializeTemplate;
+        $this->requireJsSrc = $requireJsSrc;
+        $this->container = $container;
     }
 
     /**
@@ -84,18 +97,39 @@ class RequireJSHelper extends Helper
      *     which case the configuration should be specified manually either
      *     before or after RequireJS is loaded
      *
-     * @param  array  $options An array of options
+     * @param  array $options An array of options
+     *
      * @return string
      * @link http://requirejs.org/docs/api.html#config
      */
-    public function initialize(array $options = array())
+    public function initialize(array $options = [])
     {
-        $defaults = array(
-            'main'      => null,
+        $defaults = [
+            'main' => null,
             'configure' => true,
+        ];
+
+        $options = array_merge($defaults, $options);
+
+        $mergedOptions = array_merge(
+            [
+                'main' => $options['main'],
+                'config' => $options['configure']
+                    ? $this->configurationBuilder->getConfiguration()
+                    : null,
+            ],
+            array_diff_key($options, $defaults)
         );
 
-        $mergedOptions = array_merge($defaults, $options);
+        $config = $mergedOptions['config'];
+        if (!array_key_exists('urlArgs', $config) && array_key_exists('version_strategy', $config)) {
+            $versioningStrategyKey = $config['version_strategy'];
+            /** @var VersionStrategyInterface $versioningStrategy */
+            $versioningStrategy = $this->container->get($versioningStrategyKey);
+            $urlArgs = ltrim($versioningStrategy->applyVersion(null), '?');
+            $config['urlArgs'] = $urlArgs;
+            $mergedOptions['config'] = $config;
+        }
 
         return $this->engine->render(
             $this->initializeTemplate,
@@ -111,7 +145,8 @@ class RequireJSHelper extends Helper
     public function src()
     {
         if ($this->engine->exists($this->requireJsSrc)
-            && $this->engine->supports($this->requireJsSrc)) {
+            && $this->engine->supports($this->requireJsSrc)
+        ) {
             return $this->engine->render($this->requireJsSrc);
         }
 
