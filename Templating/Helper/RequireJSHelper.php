@@ -124,6 +124,8 @@ class RequireJSHelper extends Helper
         $config = $mergedOptions['config'];
         if (!array_key_exists('urlArgs', $config) && array_key_exists('version_strategy', $config)) {
             $versioningStrategyKey = $config['version_strategy'];
+            unset($config['version_strategy']);
+            
             /** @var VersionStrategyInterface $versioningStrategy */
             $versioningStrategy = $this->container->get($versioningStrategyKey);
             $urlArgs = ltrim($versioningStrategy->applyVersion(null), '?');
