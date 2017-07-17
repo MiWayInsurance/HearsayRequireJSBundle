@@ -20,7 +20,7 @@ use Hearsay\RequireJSBundle\Templating\Helper\RequireJSHelper;
  * Twig extension providing RequireJS functionality.
  * @author Kevin Montag <kevin@hearsay.it>
  */
-class RequireJSExtension extends \Twig_Extension
+class RequireJSExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInterface
 {
     /**
      * @var ConfigurationBuilder
@@ -55,25 +55,15 @@ class RequireJSExtension extends \Twig_Extension
             'require_js_initialize' => new \Twig_Function_Method(
                 $this,
                 'initialize',
-                array('is_safe' => array('html'))
+                array(
+                    'is_safe' =>
+                        array(
+                            'html'
+                        ),
+                    'needs_environment' => true
+                )
             ),
             'require_js_src'        => new \Twig_Function_Method($this, 'src'),
-        );
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getGlobals()
-    {
-        if (!$this->container->isScopeActive('request')) {
-            return array();
-        }
-
-        return array(
-            'require_js' => array(
-                'config' => $this->configurationBuilder->getConfiguration(),
-            ),
         );
     }
 

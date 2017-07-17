@@ -11,9 +11,6 @@
 
 namespace Hearsay\RequireJSBundle\Tests\Twig\Extension;
 
-use Symfony\Component\DependencyInjection\Container;
-use Symfony\Component\DependencyInjection\Scope;
-
 use Hearsay\RequireJSBundle\Twig\Extension\RequireJSExtension;
 
 /**
@@ -22,7 +19,7 @@ use Hearsay\RequireJSBundle\Twig\Extension\RequireJSExtension;
 class RequireJSExtensionTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var Container
+     * @var \PHPUnit_Framework_MockObject_MockObject
      */
     private $container;
 
@@ -38,7 +35,9 @@ class RequireJSExtensionTest extends \PHPUnit_Framework_TestCase
     {
         parent::setUp();
 
-        $this->container = new Container();
+        $this->container = $this->getMockBuilder('Symfony\Component\DependencyInjection\Container')
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $configurationBuilder = $this
             ->getMockBuilder('Hearsay\RequireJSBundle\Configuration\ConfigurationBuilder')
@@ -53,28 +52,6 @@ class RequireJSExtensionTest extends \PHPUnit_Framework_TestCase
         $this->extension = new RequireJSExtension(
             $this->container,
             $configurationBuilder
-        );
-    }
-
-    /**
-     * @covers Hearsay\RequireJSBundle\Twig\Extension\RequireJSExtension::getGlobals
-     */
-    public function testGetGlobalsInInactiveRequestScope()
-    {
-        $this->assertEquals(array(), $this->extension->getGlobals());
-    }
-
-    /**
-     * @covers Hearsay\RequireJSBundle\Twig\Extension\RequireJSExtension::getGlobals
-     */
-    public function testGetGlobalsInActiveRequestScope()
-    {
-        $this->container->addScope(new Scope('request'));
-        $this->container->enterScope('request');
-
-        $this->assertEquals(
-            array('require_js' => array('config' => array())),
-            $this->extension->getGlobals()
         );
     }
 }

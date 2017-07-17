@@ -11,9 +11,6 @@
 
 namespace Hearsay\RequireJSBundle\Tests\Configuration;
 
-use Symfony\Component\DependencyInjection\Container;
-use Symfony\Component\DependencyInjection\Scope;
-
 use Hearsay\RequireJSBundle\Configuration\ConfigurationBuilder;
 
 /**
@@ -23,7 +20,7 @@ use Hearsay\RequireJSBundle\Configuration\ConfigurationBuilder;
 class ConfigurationBuilderTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var Container
+     * @var \PHPUnit_Framework_MockObject_MockObject
      */
     private $container;
 
@@ -34,18 +31,18 @@ class ConfigurationBuilderTest extends \PHPUnit_Framework_TestCase
     {
         parent::setUp();
 
-        $this->container = new Container();
-        $this->container->addScope(new Scope('request'));
-        $this->container->enterScope('request');
+        $this->container = $this->getMockBuilder('Symfony\Component\DependencyInjection\Container')
+        ->disableOriginalConstructor()
+        ->getMock();
 
         $translator = $this
-            ->getMock('Symfony\Component\Translation\TranslatorInterface');
+            ->createMock('Symfony\Component\Translation\TranslatorInterface');
         $translator
             ->expects($this->any())
             ->method('getLocale')
             ->will($this->returnValue('fr_FR'));
 
-        $this->container->set('translator', $translator);
+        $this->container->setParameter('translator', $translator);
     }
 
     /**
@@ -56,7 +53,7 @@ class ConfigurationBuilderTest extends \PHPUnit_Framework_TestCase
     public function testConfigurationGenerated()
     {
         $mapping = $this
-            ->getMock('Hearsay\RequireJSBundle\Configuration\NamespaceMappingInterface');
+            ->createMock('Hearsay\RequireJSBundle\Configuration\NamespaceMappingInterface');
 
         $this->setRequestMock('/base');
         $this->container->setParameter('assetic.use_controller', true);
@@ -85,7 +82,7 @@ class ConfigurationBuilderTest extends \PHPUnit_Framework_TestCase
     public function testBaseUrlSlashesTrimmed()
     {
         $mapping = $this
-            ->getMock('Hearsay\RequireJSBundle\Configuration\NamespaceMappingInterface');
+            ->createMock('Hearsay\RequireJSBundle\Configuration\NamespaceMappingInterface');
 
         $this->setRequestMock('/base');
         $this->container->setParameter('assetic.use_controller', true);
@@ -108,7 +105,7 @@ class ConfigurationBuilderTest extends \PHPUnit_Framework_TestCase
     public function testBaseUrlIgnoredIfAppropriate()
     {
         $mapping = $this
-            ->getMock('Hearsay\RequireJSBundle\Configuration\NamespaceMappingInterface');
+            ->createMock('Hearsay\RequireJSBundle\Configuration\NamespaceMappingInterface');
 
         $this->setAssetsHelperMock(null);
         $this->container->setParameter('assetic.use_controller', false);
@@ -131,7 +128,7 @@ class ConfigurationBuilderTest extends \PHPUnit_Framework_TestCase
     public function testPathsAdded()
     {
         $mapping = $this
-            ->getMock('Hearsay\RequireJSBundle\Configuration\NamespaceMappingInterface');
+            ->createMock('Hearsay\RequireJSBundle\Configuration\NamespaceMappingInterface');
 
         $this->container->leaveScope('request');
         $this->container->setParameter('assetic.use_controller', false);
@@ -159,7 +156,7 @@ class ConfigurationBuilderTest extends \PHPUnit_Framework_TestCase
     public function testAssetsBaseUrlUsed()
     {
         $mapping = $this
-            ->getMock('Hearsay\RequireJSBundle\Configuration\NamespaceMappingInterface');
+            ->createMock('Hearsay\RequireJSBundle\Configuration\NamespaceMappingInterface');
 
         $this->setRequestMock('/base');
         $this->setAssetsHelperMock('/assets/?123');
@@ -184,7 +181,7 @@ class ConfigurationBuilderTest extends \PHPUnit_Framework_TestCase
     public function testUseAlmondDevEnvironment()
     {
         $mapping = $this
-            ->getMock('Hearsay\RequireJSBundle\Configuration\NamespaceMappingInterface');
+            ->greateMock('Hearsay\RequireJSBundle\Configuration\NamespaceMappingInterface');
 
         $this->setRequestMock('/base');
         $this->container->setParameter('assetic.use_controller', true);
@@ -207,7 +204,7 @@ class ConfigurationBuilderTest extends \PHPUnit_Framework_TestCase
     public function testUseAlmondProdEnvironment()
     {
         $mapping = $this
-            ->getMock('Hearsay\RequireJSBundle\Configuration\NamespaceMappingInterface');
+            ->createMock('Hearsay\RequireJSBundle\Configuration\NamespaceMappingInterface');
 
         $this->setRequestMock('/base');
         $this->container->setParameter('assetic.use_controller', true);
@@ -237,7 +234,7 @@ class ConfigurationBuilderTest extends \PHPUnit_Framework_TestCase
             ->with($this->equalTo(''))
             ->will($this->returnValue($filename));
 
-        $this->container->set('templating.helper.assets', $assetsHelper, 'request');
+        $this->container->setParameter('templating.helper.assets', $assetsHelper, 'request');
     }
 
     /**
@@ -246,12 +243,12 @@ class ConfigurationBuilderTest extends \PHPUnit_Framework_TestCase
     private function setRequestMock($baseUrl)
     {
         $request = $this
-            ->getMock('Symfony\Component\HttpFoundation\Request');
+            ->createMock('Symfony\Component\HttpFoundation\Request');
         $request
             ->expects($this->any())
             ->method('getBaseUrl')
             ->will($this->returnValue($baseUrl));
 
-        $this->container->set('request', $request);
+        $this->container->setParameter('request', $request);
     }
 }

@@ -20,12 +20,15 @@
         "symfony/finder": ">=2.0",
         "symfony/yaml": ">=2.0",
         "symfony/assetic-bundle": "^2.8",
-        "symfony/framework-bundle": "^2.3|^3.0"
+        "symfony/framework-bundle": "^2.3|^3.0",
+        "symfony/templating": "^3.3"
     },
     "require-dev": {
         "twig/extensions": "v1.0.0",
-        "squizlabs/php_codesniffer": "1.*",
-        "phpunit/phpunit": "3.7.*"
+        "squizlabs/php_codesniffer": "^2.7",
+        "phpunit/phpunit": "^5.7",
+        "phpunit/phpunit-mock-objects":"^3.4",
+        "phpro/grumphp": "^0.11.1"
     },
     "autoload": {
         "psr-0": {
