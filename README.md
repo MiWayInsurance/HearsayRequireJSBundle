@@ -11,31 +11,14 @@ This bundle provides integration of the [RequireJS][1] library into Symfony2.
 
 ### 1. Using Composer (recommended) ###
 
-To install `HearsayRequireJSBundle` with [Composer][2] just add the following to
-your `composer.json` file:
-
-```json
-{
-    // ...
-    "require": {
-        // ...
-        "hearsay/require-js-bundle": "2.0.*@dev"
-        // ...
-    }
-    // ...
-}
-```
+To install `HearsayRequireJSBundle` with the [Composer][2] command:
+```bash
+composer require hearsay/require-js-bundle:^1.1
+``` 
 
 > Note that the `master` branch is under development and unstable yet. If you
 > want to use stable version then specify the `1.0.*` version. However, remember
 > that the `1.0` branch no longer provides new features, only bug fixes.
-
-Then, you can install the new dependencies by running Composer's update command
-from the directory where your `composer.json` file is located:
-
-```sh
-$ php composer.phar update hearsay/require-js-bundle
-```
 
 Now, Composer will automatically download all required files, and install them
 for you. All that is left to do is to update your `AppKernel.php` file, and
