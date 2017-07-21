@@ -20,7 +20,7 @@ use Hearsay\RequireJSBundle\Templating\Helper\RequireJSHelper;
 class RequireJSHelperTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @covers Hearsay\RequireJSBundle\Templating\Helper\RequireJSHelper::initialize
+     * @covers \Hearsay\RequireJSBundle\Templating\Helper\RequireJSHelper::initialize
      */
     public function testDefaultInitialization()
     {
@@ -43,7 +43,7 @@ class RequireJSHelperTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Hearsay\RequireJSBundle\Templating\Helper\RequireJSHelper::initialize
+     * @covers \Hearsay\RequireJSBundle\Templating\Helper\RequireJSHelper::initialize
      */
     public function testConfigurationSuppressed()
     {
@@ -65,7 +65,7 @@ class RequireJSHelperTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Hearsay\RequireJSBundle\Templating\Helper\RequireJSHelper::initialize
+     * @covers \Hearsay\RequireJSBundle\Templating\Helper\RequireJSHelper::initialize
      */
     public function testMainScriptIncluded()
     {
@@ -94,7 +94,7 @@ class RequireJSHelperTest extends \PHPUnit_Framework_TestCase
      */
     private function getEngineMock($config = null, $main = null)
     {
-        $engine = $this->getMock('Symfony\Component\Templating\EngineInterface');
+        $engine = $this->createMock('Symfony\Component\Templating\EngineInterface');
         $engine->expects($this->once())
             ->method('render')
             ->with('template', array(

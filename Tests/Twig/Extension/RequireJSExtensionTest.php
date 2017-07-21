@@ -30,8 +30,9 @@ class RequireJSExtensionTest extends \PHPUnit_Framework_TestCase
 
     /**
      * {@inheritDoc}
+     * @test
      */
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
 
